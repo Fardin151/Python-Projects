@@ -72,11 +72,40 @@ def reset_game():
 
 # ---------------- UI ----------------
 root = tk.Tk()
-root.title("🎰 Casino Dice Game")
-root.geometry("350x400")
+root.title("🎰 Dice Game")
+root.geometry("350x600")
 root.config(bg="white")
 
 tk.Label(root, text="Casino Dice Game 🎲", font=("Arial", 16)).pack(pady=10)
+
+rules_text = """
+🎰 GAME RULES
+
+💰 Start: $100
+🎲 Each roll costs: $10
+
+🏆 WIN:
+Total = 7 or 11 → +$25
+
+💀 LOSE:
+Total = 2, 3, 12 → no reward
+
+⚖️ DRAW:
+Anything else → no bonus
+
+❌ Game ends when balance < $10
+"""
+
+rules_label = tk.Label(
+    root,
+    text=rules_text,
+    justify="left",
+    font=("Arial", 10),
+    bg="white",
+    fg="black"
+)
+
+rules_label.pack(pady=10)
 
 tk.Label(root, text="Number of Dice:").pack()
 entry = tk.Entry(root)
