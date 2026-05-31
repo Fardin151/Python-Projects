@@ -1,56 +1,84 @@
 import tkinter as tk
 import random
 
-# ---------------- App State ----------------
+# ---------------- STATE ----------------
 total_rolls = 0
+rolling = False
 
-# ---------------- Functions ----------------
-def roll_dice():
+# ---------------- FUNCTIONS ----------------
+def animate_roll(steps, current_step, num_dice, final_results):
+    global rolling
+
+    if current_step < steps:
+        temp_results = []
+
+        for _ in range(num_dice):
+            temp_results.append(random.randint(1, 6))
+
+        result_label.config(text="🎲 Rolling...\n" + str(temp_results))
+
+        root.after(80, animate_roll, steps, current_step + 1, num_dice, final_results)
+
+    else:
+        rolling = False
+        show_final_result(final_results)
+
+
+def show_final_result(results):
     global total_rolls
+
+    total_rolls += 1
+
+    text = ""
+    for i, value in enumerate(results, start=1):
+        text += f"Dice {i}: {value}\n"
+
+    text += f"\nTotal: {sum(results)}"
+    text += f"\nSession Rolls: {total_rolls}"
+
+    result_label.config(text=text)
+
+
+def roll_dice():
+    global rolling
+
+    if rolling:
+        return
 
     try:
         num_dice = int(entry.get())
+        if num_dice <= 0:
+            result_label.config(text="Enter number > 0")
+            return
     except:
         result_label.config(text="Enter a valid number!")
         return
 
-    results = []
-    for _ in range(num_dice):
-        results.append(random.randint(1, 6))
+    rolling = True
 
-    total_rolls += 1
+    final_results = [random.randint(1, 6) for _ in range(num_dice)]
 
-    result_text = ""
-    for i, value in enumerate(results, start=1):
-        result_text += f"Dice {i}: {value}\n"
-
-    result_text += f"\nTotal: {sum(results)}"
-    result_text += f"\nSession Rolls: {total_rolls}"
-
-    result_label.config(text=result_text)
+    animate_roll(10, 0, num_dice, final_results)
 
 
 def exit_app():
     root.destroy()
 
 
-# ---------------- UI Setup ----------------
+# ---------------- UI ----------------
 root = tk.Tk()
-root.title("🎲 Dice Simulator")
-root.geometry("300x300")
+root.title("🎲 Dice Simulator (Animated)")
+root.geometry("350x350")
 
-# Input
 tk.Label(root, text="Number of Dice:").pack()
+
 entry = tk.Entry(root)
 entry.pack()
 
-# Buttons
 tk.Button(root, text="Roll Dice 🎲", command=roll_dice).pack(pady=10)
 tk.Button(root, text="Exit ❌", command=exit_app).pack()
 
-# Output
-result_label = tk.Label(root, text="", justify="left")
-result_label.pack(pady=10)
+result_label = tk.Label(root, text="", justify="left", font=("Arial", 12))
+result_label.pack(pady=20)
 
-# Run app
 root.mainloop()
